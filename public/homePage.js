@@ -24,9 +24,9 @@ const ratesBoard = new RatesBoard();
 
 // Функция для выполнения запроса получения курсов валют
 function getCurrencyRates() {
-  ApiConnector.getStocks((data) => {
+  ApiConnector.getStocks((responseBody) => {
     ratesBoard.clearTable(); // очищаем таблицу
-    ratesBoard.fillTable(data); // заполняем таблицу полученными данными
+    ratesBoard.fillTable(responseBody.data); // заполняем таблицу полученными данными
   });
 }
 
@@ -34,3 +34,50 @@ getCurrencyRates(); // Вызываем функцию для получения
 
 setInterval(getCurrencyRates, 60000); // Устанавливаем интервал для выполнения функции раз в минуту
 
+
+// Операции с деньгами
+
+// Создание объекта типа MoneyManager
+const moneyManager = new MoneyManager();
+
+// Реализация пополнения баланса
+moneyManager.addMoneyCallback = (data) => {
+  ApiConnector.addMoney(data, (response) => {
+    if (response.success) {
+      ProfileWidget.showProfile(response.data);
+      const message = `Баланс пополнен на ${data.amount} ${data.currency}`;
+      moneyManager.setMessage(true, message);
+    } else {
+      const message = response.error || 'Ошибка пополнения баланса';
+      moneyManager.setMessage(false, message);
+    }
+  });
+};
+
+// Реализация конвертирования валюты
+moneyManager.conversionMoneyCallback = (data) => {
+  ApiConnector.convertMoney(data, (response) => {
+    if (response.success) {
+      ProfileWidget.showProfile(response.data);
+      const message = `Вы конвертировали ${data.fromAmount} ${data.fromCurrency} в ${response.data.toAmount} ${response.data.toCurrency}`;
+      moneyManager.setMessage(true, message);
+    } else {
+      const message = response.error || 'Ошибка конвертации валюты';
+      moneyManager.setMessage(false, message);
+    }
+  });
+};
+
+// Реализация перевода валюты
+moneyManager.sendMoneyCallback = (data) => {
+  ApiConnector.transferMoney(data, (response) => {
+    if (response.success) {
+      ProfileWidget.showProfile(response.data);
+      const message = `Вы перевели ${data.amount} ${data.currency} пользователю с id ${data.to}`;
+      moneyManager.setMessage(true, message);
+    } else {
+      const message = response.error || 'Ошибка перевода валюты';
+      moneyManager.setMessage(false, message);
+    }
+  });
+};
