@@ -89,42 +89,42 @@ moneyManager.sendMoneyCallback = (data) => {
 const favoritesWidget = new FavoritesWidget();
 
 // Запрос начального списка избранного
-ApiConnector.getFavorites(response => {
-	if (response.success) {
-		favoritesWidget.clearTable(); // очищаем таблицу
-		favoritesWidget.fillTable(response.data); // заполняем таблицу полученными данными
-		favoritesWidget.updateUsersList(response.data); // заполняем выпадающий список для перевода денег
-	}
+ApiConnector.getFavorites((response) => {
+if (response.success) {
+favoritesWidget.clearTable();
+favoritesWidget.fillTable(response.data);
+moneyManager.updateUsersList(response.data); // исправлено: передаем полученные данные из запроса
+}
 });
 
 // Реализация добавления пользователя в список избранных
-favoritesWidget.addUserCallback = data => {
-	ApiConnector.addUserToFavorites(data, response => {
-		if (response.success) {
-			favoritesWidget.clearTable(); // очищаем таблицу
-			favoritesWidget.fillTable(response.data); // заполняем таблицу полученными данными
-			favoritesWidget.updateUsersList(response.data); // заполняем выпадающий список для перевода денег
-			const message = `Пользователь с id ${data.id} добавлен в список избранных`;
-			favoritesWidget.setMessage(true, message);
-		} else {
-			const message = response.error || 'Ошибка добавления пользователя в список избранных';
-			favoritesWidget.setMessage(false, message);
-		}
-	});
+favoritesWidget.addUserCallback = (data) => {
+ApiConnector.addUserToFavorites(data, (response) => {
+if (response.success) {
+favoritesWidget.clearTable();
+favoritesWidget.fillTable(response.data);
+moneyManager.updateUsersList(response.data); // исправлено: передаем полученные данные из запроса
+const message = `Пользователь с id ${data.id} добавлен в список избранных`;
+favoritesWidget.setMessage(true, message);
+} else {
+const message = response.error || 'Ошибка добавления пользователя в список избранных';
+favoritesWidget.setMessage(false, message);
+}
+});
 };
 
 // Реализация удаления пользователя из списка избранных
-favoritesWidget.removeUserCallback = data => {
-	ApiConnector.removeUserFromFavorites(data, response => {
-		if (response.success) {
-			favoritesWidget.clearTable(); // очищаем таблицу
-			favoritesWidget.fillTable(response.data); // заполняем таблицу полученными данными
-			favoritesWidget.updateUsersList(response.data); // заполняем выпадающий список для перевода денег
-			const message = `Пользователь с id ${data} удален из списка избранных`;
-			favoritesWidget.setMessage(true, message);
-		} else {
-			const message = response.error || 'Ошибка удаления пользователя из списка избранных';
-			favoritesWidget.setMessage(false, message);
-		}
-	});
+favoritesWidget.removeUserCallback = (data) => {
+ApiConnector.removeUserFromFavorites(data, (response) => {
+if (response.success) {
+favoritesWidget.clearTable();
+favoritesWidget.fillTable(response.data);
+moneyManager.updateUsersList(response.data); // исправлено: передаем полученные данные из запроса
+const message = `Пользователь с id ${data} удален из списка избранных`;
+favoritesWidget.setMessage(true, message);
+} else {
+const message = response.error || 'Ошибка удаления пользователя из списка избранных';
+favoritesWidget.setMessage(false, message);
+}
+});
 };
